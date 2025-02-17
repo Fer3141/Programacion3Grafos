@@ -13,38 +13,23 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 public class Artista {
     @Id
     private final String nombre;
-    private final Integer anioNacimiento;
 
-    @Relationship(type = "COLABORO_CON", direction = INCOMING)
-    private Set<Artista> colaboraciones = new HashSet<>();
+    @Relationship(type = "CANTADA_POR", direction = INCOMING)
+    private Set<Cancion> canciones = new HashSet<>();
 
-    public Artista(String nombre, Integer anioNacimiento) {
+    public Artista(String nombre) {
         this.nombre = nombre;
-        this.anioNacimiento = anioNacimiento;
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    public Integer getAnioNacimiento() {
-        return anioNacimiento;
+    public Set<Cancion> getCanciones() {
+        return canciones;
     }
 
-    public Set<Artista> getColaboraciones() {
-        return colaboraciones;
-    }
-
-    public void setColaboraciones(Set<Artista> colaboraciones) {
-        this.colaboraciones = colaboraciones;
-    }
-
-    @Override
-    public String toString() {
-        return "Artista{" +
-                "nombre='" + nombre + '\'' +
-                ", anioNacimiento=" + anioNacimiento +
-                ", colaboraciones=" + colaboraciones +
-                '}';
+    public void setCanciones(Set<Cancion> canciones) {
+        this.canciones = canciones;
     }
 }

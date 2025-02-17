@@ -42,7 +42,11 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>5.20.0</version>
+        </dependency>
         <!-- Spring Data Neo4j -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
