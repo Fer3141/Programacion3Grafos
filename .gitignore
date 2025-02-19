@@ -22,3 +22,57 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# IntelliJ IDEA specific
+.idea/
+*.iml
+*.iws
+
+# Compiled class files
+*.class
+
+# Logs
+*.log
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Build directories
+/out/
+/build/
+/target/
+
+# Gradle
+.gradle/
+/build/
+
+# Maven
+.mvn/
+!mvn/wrapper/maven-wrapper.jar
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Java specific
+*.jar
+*.war
+*.ear
+
+# Generated files
+*.generated
+
+# Temporary files
+*.tmp
+*.swp
+
+# IDE index files
+*.idx
+*.cache
+
+# Lombok config
+.lombok/
