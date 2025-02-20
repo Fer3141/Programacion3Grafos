@@ -3,201 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canciones y Artistas</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
+    <title>Gestión de Canciones y Artistas</title>
+    <script>
+        async function listarCanciones() {
+            const response = await fetch("http://localhost:8080/songs");
+            const canciones = await response.json();
+            document.getElementById("listaCanciones").innerHTML = canciones.map(c => `<li>${c.title} (${c.singers.map(s => s.name).join(', ')})</li>`).join('');
         }
-        input, button {
-            margin: 5px;
-            padding: 10px;
-        }
-        #listaCanciones, #listaArtistas {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
 
-<h2>Agregar un Artista</h2>
+        async function listarArtistas() {
+            const response = await fetch("http://localhost:8080/singers");
+            const artistas = await response.json();
+            document.getElementById("listaArtistas").innerHTML = artistas.map(a => `<li>${a.name}</li>`).join('');
+        }
+
+        async function agregarArtista() {
+            const nombre = document.getElementById("nombreArtista").value;
+            if (!nombre) return alert("Ingresa un nombre de artista");
+            await fetch(`http://localhost:8080/singers/add?name=${encodeURIComponent(nombre)}`, { method: "GET" });
+            listarArtistas();
+        }
+
+        async function agregarCancion() {
+            const titulo = document.getElementById("tituloCancion").value;
+            const artista = document.getElementById("artistaCancion").value;
+            if (!titulo || !artista) return alert("Ingresa título y artista");
+            await fetch(`http://localhost:8080/songs/add?title=${encodeURIComponent(titulo)}&singers=${encodeURIComponent(artista)}`, { method: "GET" });
+            listarCanciones();
+        }
+    </script>
+</head>
+<body onload="listarCanciones(); listarArtistas();">
+<h1>Gestión de Canciones y Artistas</h1>
+
+<h2>Listar Canciones</h2>
+<ul id="listaCanciones"></ul>
+
+<h2>Listar Artistas</h2>
+<ul id="listaArtistas"></ul>
+
+<h2>Agregar Artista</h2>
 <input type="text" id="nombreArtista" placeholder="Nombre del artista">
 <button onclick="agregarArtista()">Agregar Artista</button>
 
-<h2>Lista de Artistas</h2>
-<button onclick="obtenerArtistas()">Cargar Artistas</button>
-<ul id="listaArtistas"></ul>
-
-<h2>Agregar una Canción</h2>
-<input type="text" id="titulo" placeholder="Título de la canción">
-<select id="artistaSeleccionado">
-    <option value="">Seleccionar Artista</option>
-</select>
+<h2>Agregar Canción con Artista</h2>
+<input type="text" id="tituloCancion" placeholder="Título de la canción">
+<input type="text" id="artistaCancion" placeholder="Nombre del artista">
 <button onclick="agregarCancion()">Agregar Canción</button>
-
-<h2>Lista de Canciones</h2>
-<button onclick="obtenerCanciones()">Cargar Canciones</button>
-<ul id="listaCanciones"></ul>
-
-<script>
-    const API_CANCIONES = "http://localhost:8080/canciones";
-    const API_ARTISTAS = "http://localhost:8080/artistas";
-
-    function agregarArtista() {
-        const nombre = document.getElementById("nombreArtista").value.trim();
-        if (!nombre) {
-            alert("Debes ingresar un nombre de artista.");
-            return;
-        }
-
-        const artista = { nombre };
-
-        fetch(API_ARTISTAS, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(artista)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert("Artista agregado con éxito");
-                console.log("Artista agregado:", data);
-                obtenerArtistas(); // Recargar la lista de artistas inmediatamente
-            })
-            .catch(error => console.error("Error al agregar artista:", error));
-    }
-
-    function obtenerArtistas() {
-        fetch(API_ARTISTAS)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(artistas => {
-                console.log("Artistas obtenidos:", artistas);
-
-                const lista = document.getElementById("listaArtistas");
-                const select = document.getElementById("artistaSeleccionado");
-
-                // Limpiar listas antes de agregar nuevos elementos
-                lista.innerHTML = "";
-                select.innerHTML = `<option value="">Seleccionar Artista</option>`;
-
-                if (artistas.length === 0) {
-                    lista.innerHTML = "<li>No hay artistas disponibles.</li>";
-                    return;
-                }
-
-                artistas.forEach(artista => {
-                    if (!artista.nombre) {
-                        console.warn("Artista sin nombre detectado:", artista);
-                        return;
-                    }
-
-                    // Agregar a la lista de artistas en pantalla
-                    const item = document.createElement("li");
-                    item.textContent = artista.nombre;
-                    lista.appendChild(item);
-
-                    // Agregar al select de canciones
-                    const option = document.createElement("option");
-                    option.value = artista.nombre;
-                    option.textContent = artista.nombre;
-                    select.appendChild(option);
-                });
-
-                console.log("Lista de artistas y menú desplegable actualizados.");
-            })
-            .catch(error => console.error("Error al obtener artistas:", error));
-    }
-
-    function agregarCancion() {
-        const titulo = document.getElementById("titulo").value.trim();
-        const artistaSeleccionado = document.getElementById("artistaSeleccionado").value;
-
-        if (!titulo) {
-            alert("Debes ingresar un título de canción.");
-            return;
-        }
-
-        if (!artistaSeleccionado) {
-            alert("Debes seleccionar un artista.");
-            return;
-        }
-
-        const cancion = {
-            titulo,
-            artistas: [{ nombre: artistaSeleccionado }]
-        };
-
-        fetch(API_CANCIONES, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(cancion)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert("Canción agregada con éxito");
-                console.log("Canción agregada:", data);
-                obtenerCanciones(); // Recargar lista de canciones
-            })
-            .catch(error => console.error("Error al agregar canción:", error));
-    }
-
-    function obtenerCanciones() {
-        fetch(API_CANCIONES)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(canciones => {
-                console.log("Canciones obtenidas:", canciones);
-                const lista = document.getElementById("listaCanciones");
-
-                // Limpiar la lista antes de agregar nuevos elementos
-                lista.innerHTML = "";
-
-                if (canciones.length === 0) {
-                    lista.innerHTML = "<li>No hay canciones disponibles.</li>";
-                    return;
-                }
-
-                canciones.forEach(cancion => {
-                    if (!cancion.titulo || !cancion.artistas) {
-                        console.warn("Canción con datos incompletos:", cancion);
-                        return;
-                    }
-
-                    const item = document.createElement("li");
-                    item.textContent = `${cancion.titulo} | Artistas: ${cancion.artistas.map(a => a.nombre).join(", ")}`;
-                    lista.appendChild(item);
-                });
-
-                console.log("Lista de canciones actualizada.");
-            })
-            .catch(error => console.error("Error al obtener canciones:", error));
-    }
-
-    // Cargar artistas y canciones automáticamente al abrir la página
-    window.onload = function() {
-        obtenerArtistas();
-        obtenerCanciones();
-    };
-</script>
-
 </body>
 </html>

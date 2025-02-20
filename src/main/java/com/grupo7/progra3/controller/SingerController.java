@@ -27,4 +27,11 @@ public class SingerController {
     public Mono<SingerEntity> getSingerByName(@RequestParam String name) {
         return singerRepository.findById(name);
     }
+
+    @GetMapping("/add")
+    public Mono<SingerEntity> addSingerByGet(@RequestParam String name) {
+        SingerEntity newSinger = new SingerEntity(name);
+        return singerRepository.save(newSinger);
+    }
+
 }

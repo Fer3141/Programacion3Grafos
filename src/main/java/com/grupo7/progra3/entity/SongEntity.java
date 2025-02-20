@@ -21,4 +21,5 @@ public class SongEntity {
 
     public String getTitle() { return title; }
     public Set<SingerEntity> getSingers() { return singers; }
+
 }
