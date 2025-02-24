@@ -4,11 +4,15 @@ import com.grupo7.progra3.entity.SongEntity;
 import com.grupo7.progra3.entity.SingerEntity;
 import com.grupo7.progra3.repository.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @Service
+@RestController
+@RequestMapping("/graph")
 public class GraphService {
     private final SongRepository songRepository;
     private final Map<String, Set<String>> adjacencyList = new HashMap<>();
@@ -88,5 +92,23 @@ public class GraphService {
             }
         }
         return Collections.emptyList();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<String>> searchPathEndpoint(@RequestParam String start, @RequestParam String end) {
+        List<String> path = searchPath(start, end);
+        if (path.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(path);
+    }
+
+    @GetMapping("/search-bfs")
+    public ResponseEntity<List<String>> searchPathBFSEndpoint(@RequestParam String start, @RequestParam String end) {
+        List<String> path = searchPathBFS(start, end);
+        if (path.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(path);
     }
 }
