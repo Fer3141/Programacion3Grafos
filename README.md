@@ -1,5 +1,6 @@
 # Programacion3
-ejercicios grupales progra 3
+Ejercicio TP:
 
-
-test
+Base en neo4j con api backend , put y get.
+Recorrido con backtracking
+Recorrido sobre grafos DFS y BFS
